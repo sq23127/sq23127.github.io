@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>海洋可视化平台 · Vue 工程使用说明</title>
+<style>
+:root{--ink:#173749;--muted:#587283;--line:#d9e5ec;--accent:#087f92;--soft:#eef7fa;color-scheme:light}*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:20px}body{margin:0;background:#eef3f6;font:15px/1.85 "Microsoft YaHei","PingFang SC",sans-serif;color:var(--ink)}main{max-width:1060px;margin:26px auto 48px;background:white;border:1px solid var(--line);border-radius:14px;overflow:hidden}header{padding:30px 36px;background:linear-gradient(120deg,#102f44,#145e70);color:white}header p{color:#def0f5;margin:7px 0}h1{font-size:28px;line-height:1.4;margin:8px 0 13px}.eyebrow{font-size:12px;letter-spacing:2px;color:#b9dfe8}.body{padding:0 36px 30px}nav{display:flex;gap:8px;flex-wrap:wrap;padding:20px 0;border-bottom:1px solid var(--line)}a{color:var(--accent);text-underline-offset:3px}nav a{font-size:13px;text-decoration:none;background:var(--soft);border-radius:5px;padding:4px 11px}h2{font-size:22px;margin:29px 0 12px}h3{font-size:17px;margin:20px 0 9px}p{margin:9px 0}section+section{border-top:1px solid var(--line);margin-top:26px;padding-top:1px}.callout{padding:12px 16px;border-left:4px solid #1294a6;background:#eef9fb;border-radius:0 7px 7px 0;margin:15px 0}.note{font-size:13px;color:var(--muted)}ol,ul{padding-left:23px}li{margin:6px 0}.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font-size:13px;margin:12px 0}th,td{padding:10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{background:#edf4f7}code,pre{font-family:Consolas,"Microsoft YaHei",monospace}code{font-size:.92em;background:#edf3f7;padding:2px 5px;border-radius:4px;overflow-wrap:anywhere}pre{background:#102f44;color:#edf8ff;padding:14px 17px;border-radius:8px;overflow:auto;line-height:1.65}pre code{background:none;padding:0;white-space:pre;overflow-wrap:normal;font-size:13px}details{border:1px solid var(--line);border-radius:7px;padding:0 15px;margin:12px 0}summary{padding:11px 0;cursor:pointer;font-weight:600}.toolbar{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-top:16px}.toolbar button{border:0;background:white;color:#125066;border-radius:5px;padding:7px 12px;font:inherit;font-size:13px;cursor:pointer}.toolbar a{color:#dbf3fa}footer{font-size:12px;color:var(--muted);border-top:1px solid var(--line);padding-top:17px;margin-top:26px}:focus-visible{outline:3px solid #37b4c7;outline-offset:3px}@media(max-width:700px){main{margin:0;border:0;border-radius:0}header{padding:24px 20px}.body{padding:0 20px 24px}h1{font-size:24px}body{font-size:14px}}@media print{body{background:white;font-size:11pt}main{margin:0;border:0;max-width:none}header{background:white;color:#102f44;padding:10px 0}header p,.eyebrow{color:#203e50}.body{padding:0}nav,.toolbar{display:none}h2,h3{break-after:avoid}tr,.callout{break-inside:avoid}pre{background:#edf3f7;color:#102f44;white-space:pre-wrap}pre code{white-space:pre-wrap;overflow-wrap:anywhere}}
+</style></head>
+<body><main>
+<header><div class="eyebrow">OCEAN PLATFORM · VUE 工程版操作指南</div><h1>海洋可视化平台使用说明</h1>
+<p>先启动 Vue 页面，再下载或处理需要的数据，最后按已下载时次播放。</p>
+<p>前端：Vue 3 + Vite + Cesium；数据处理：Python。只看成果时使用完整 dist 构建目录。</p>
+<div class="toolbar"><button type="button" onclick="window.print()">打印 / 保存为 PDF</button><a href="数据与交付说明.html">数据与交付说明</a></div></header>
+<div class="body"><div class="note"><strong>新增完整版：</strong>接收者需在自己电脑下载、导入处理并可视化时，使用 Windows 完整运行包 OceanPlatform.exe，见 <a href="完整版平台使用说明.html">完整版平台使用说明</a>。下文关于 dist、start_platform.py 的静态交付属于仅查看模式；开发入口 platform_server.py 提供本机完整服务。</div>
+<nav aria-label="说明目录"><a href="#quick-start">启动页面</a><a href="#download">下载数据</a><a href="#process">处理发布</a><a href="#playback">播放操作</a><a href="#quality">画质设置</a><a href="#build">构建交付</a><a href="#troubleshooting">常见问题</a><a href="#reference">工程文件</a></nav>
+<section id="quick-start"><h2>1. 启动页面</h2>
+<div class="callout"><strong>根目录 index.html 是 Vue 开发入口。</strong>不能直接双击运行，也不能单独复制给别人。开发时通过 Vite 打开，交付时使用完整 dist 文件夹。</div>
+<h3>在这台电脑直接查看已有成果</h3><p>项目已附构建好的 <code>dist</code>。在 PyCharm 运行根目录 <code>start_platform.py</code>，会启动本机服务并打开 <code>http://127.0.0.1:8000/</code>；保留运行窗口，停止即关闭服务。这种查看方式无需 Node。源码或数据更新后，先按第 6 节重新构建，再刷新。</p>
+<h3>第一次运行工程</h3><ol><li>安装 package.json 所要求的 Node.js，当前范围为 <code>^20.19.0 || &gt;=22.12.0</code>。推荐 Node 22.12 或更新的兼容 LTS；pnpm 11 要求 Node 22 或以上，Node 20.19 系列请选 npm。</li><li>在工程根目录参考 .env.example 建立 <code>.env.local</code>，填写该部署使用的 <code>VITE_CESIUM_ION_TOKEN</code> 和可选的 <code>VITE_APP_TITLE</code>。这是地图客户端配置，不能填 CDS 下载令牌。</li><li>在工程根目录终端安装依赖并启动。</li></ol>
+<pre><code>npm install
+npm run dev</code></pre>
+<p>若使用 pnpm 并有对应版本，推荐按工程锁文件安装：</p>
+<pre><code>pnpm install --frozen-lockfile
+pnpm run dev</code></pre>
+<p>二选一即可。pnpm-lock.yaml 与 pnpm-workspace.yaml 应配套保留：后者包括旧版 Cesium 所需的 zip.js 2.7.34 兼容锁定及 protobufjs:false 构建策略。package.json 也配置了 npm overrides；npm install 不会读取 pnpm 锁。浏览器默认打开 <code>http://127.0.0.1:5173/</code>，启用固定端口检查，端口被占用时会报错停止；关闭占用服务，或显式传入 --port 改端口，并让 Cesium 令牌允许新地址。保留终端运行，日后通常只需 npm run dev。</p>
+<p>页面启动后自动读取 <code>public/data/scs_field.json</code>，无需重复手动导入。Cesium 程序资源在本地工程中配套提供，默认底图仍需网络。</p>
+<p class="note">如仅收到 dist，无需安装前端开发依赖，按第 6 节通过静态服务打开完整文件夹。账户、环境与给别人使用的详细修改清单见《数据与交付说明》。</p></section>
+<section id="download"><h2>2. 下载：输入时间段与数据类型</h2>
+<p>只看现有数据可跳过本节。需要下载时，先按《数据与交付说明》建立 Python .venv，配置<strong>自己的 CDS 账户</strong>，并在相关数据集页面接受其条款。令牌配置只在本机 Python 使用，不进入 Vue。</p>
+<pre><code>.\.venv\Scripts\python.exe download_data.py --setup</code></pre>
+<p>在 PyCharm 运行 download_data.py，无需参数即可中文交互输入；或在工程根目录终端执行：</p>
+<pre><code>.\.venv\Scripts\python.exe download_data.py</code></pre>
+<pre><code>数据类型：1 温度  2 盐度  3 海流(u/v)  4 波浪  5 全部
+输入编号或名称，可多选：波浪
+开始时间：2026-06-01
+结束时间：2026-07-31</code></pre>
+<p>也可直接指定条件，以下命令会<strong>实际提交下载</strong>：</p>
+<pre><code>.\.venv\Scripts\python.exe download_data.py --start 2026-06-01 --end 2026-07-31 --fields 波浪</code></pre>
+<p>仅想看请求计划，不联网下载时加 <code>--plan</code>：</p>
+<pre><code>.\.venv\Scripts\python.exe download_data.py --start 2026-06-01 --end 2026-07-31 --fields all --plan</code></pre>
+<div class="table-wrap"><table><thead><tr><th>选择</th><th>资料</th><th>真实时间精度</th></tr></thead><tbody><tr><td>海温 / 盐度 / 海流</td><td>ORAS5；海流 u/v 配对，处理时取最浅层</td><td>月平均</td></tr><tr><td>波浪</td><td>ERA5 WAM：波高 swh、波向 mwd、周期 mwp</td><td>每小时</td></tr><tr><td>全部</td><td>以上字段</td><td>分别保留真实精度</td></tr></tbody></table></div>
+<p>支持月份、日期或 UTC 整点，例如 2026-06、2026-06-01、2026-06-01T08:00，包含首尾；只填结束日期时包含当天全部小时。默认保存到 <code>01_data</code>，下载包自动解压，完整已有文件复用，排队与下载状态见终端。</p>
+<p class="note">下载区域 <code>--area 北 西 南 东</code>，默认 --area 42 105 0 128，只作用于 ERA5；ORAS5 按覆盖月份下载全球资料。</p></section>
+<section id="process"><h2>3. 处理并发布到 Vue 数据目录</h2>
+<p>build_json.py 递归读取 01_data 的 NetCDF，筛选时间、取表层、统一网格与单位。下面处理当前两个完整月份：</p>
+<pre><code>.\.venv\Scripts\python.exe build_json.py --input-dir 01_data --start 2026-06-01 --end 2026-07-31 --frequency hour --step 0.5</code></pre>
+<p>在 PyCharm 也可运行此文件，把命令中脚本名后面的参数填入运行配置。默认 hour；默认网格 0.2°，本例明确使用与波浪源网格一致的 0.5°，减少长时段数据量。</p>
+<div class="table-wrap"><table><thead><tr><th>产物</th><th>作用</th></tr></thead><tbody><tr><td><code>02_Geojson/scs_field.json</code></td><td>处理后的网格时间序列，供校验和存档</td></tr><tr><td><code>public/data/scs_field.json</code></td><td>校验通过后默认自动发布，Vue 启动时读取</td></tr><tr><td><code>dist/data/scs_field.json</code></td><td>运行前端构建后才更新的正式发布副本</td></tr></tbody></table></div>
+<div class="callout">开发环境：看到“数据已校验并发布”后刷新页面。<br>正式部署：重新运行 <code>npm run build</code>，交付或部署新 dist。Python 不会再改 index.html。</div>
+<p>当前波浪应有 1,464 个小时帧：2026-06-01 00:00 到 2026-07-31 23:00 UTC。温盐流各保留六月、七月 2 个月平均时次。hour 不会把月平均补造成小时数据。</p>
+<details><summary>只处理精确的起止小时</summary><pre><code>.\.venv\Scripts\python.exe build_json.py --start 2026-06-01T08:00 --end 2026-06-02T08:00 --frequency hour --step 0.5</code></pre><p>包含首尾，共 25 个小时；前提是输入资料包含这些小时。北京时间是 UTC 加 8 小时。</p></details>
+<details><summary>只有 JSON，怎样单独发布</summary><pre><code>.\.venv\Scripts\python.exe check_json.py 02_Geojson/scs_field.json
+.\.venv\Scripts\python.exe pack_json.py --data 02_Geojson/scs_field.json</code></pre><p>默认发布到 public/data/scs_field.json。build_json.py --json-only 仅生成处理结果，跳过发布；之后需单独运行 pack_json.py 才改变启动数据。</p></details>
+<p class="note">原 <code>--html</code> 参数已停用，使用 <code>--publish-to public/data/scs_field.json</code> 指定发布路径。新路径若改名，还要修改 src/config.js 中的 dataUrl 或手动导入该文件；只写另一个 JSON 不会让页面自动改读它。</p></section>
+<section id="playback"><h2>4. 查看、拖动与连续播放</h2><ol>
+<li>通过开发或部署网址打开页面，选择温度、盐度、海流粒子、波高或波浪粒子。</li><li>设置开始与结束时间，波浪可精确到 UTC 日期与小时，点击播放。</li><li>拖动整行时间轴可往返预览；拖动暂停自动播放，松手定位所选时刻。也可点击时间轴跳转，聚焦后用左右方向键查看。</li><li>上一帧 / 下一帧逐帧查看；调整速度、正放 / 倒放与循环。不循环时到区间边界停止。</li><li>鼠标在地图上移动查看当前帧数值。右侧当前点数据位于数据信息上方，色标随显示要素更新。</li></ol>
+<p>切换要素后时间轴只列出该要素的有效时次；至少 2 个时次才能播放。速度影响切帧间隔，不改变数据实际时间精度。1× 目标约 1.1 秒推进一个时次，设备较慢时等待图层准备完成。</p>
+<p>色面切换保留旧画面直到新图准备好，再平滑渐变。粒子保留轨迹并更新向量场。渐变减少闪屏，不增加真实观测；波浪粒子速度是显示参数，不是真实波速。</p>
+<details><summary>导入按钮何时用</summary><p>已有其他处理好的 JSON 时可手动导入。“多合一”替换当前数据集；分类导入按时次合并，要求网格和范围一致。海流 u/v 配对，波浪粒子需波高与波向。手动导入只影响当前浏览器，不会自动写回工程或已部署数据。</p></details></section>
+<section id="quality"><h2>5. 画质与流畅度</h2>
+<p>在显示画质区域选择自动、高清或流畅，并调整图层不透明度。调整后会暂停播放，待重绘完成可继续播放。</p>
+<div class="table-wrap"><table><thead><tr><th>设置</th><th>用法</th></tr></thead><tbody><tr><td>自动</td><td>按屏幕选择贴图精度，适合日常查看和连续播放。</td></tr><tr><td>高清</td><td>适合放大观察海岸与颜色分布；若切帧等待明显，改回自动。</td></tr><tr><td>流畅</td><td>减少贴图开销，适合性能有限的设备。</td></tr><tr><td>不透明度</td><td>默认 92%；降低可看到更多底图，适用于温度、盐度、波高色面。</td></tr></tbody></table></div>
+<p>海岸采用独立的 Natural Earth 陆地遮罩，裁剪颜色图层；长时段按需生成并缓存少量贴图，不会一次生成全部 1,464 帧。</p>
+<div class="callout"><strong>画面清晰度不等于数据精度。</strong>当前 0.5° × 0.5° 是经纬度格点间隔，约数十公里；不是 0.5 公里。高清和更小的 --step 可改善显示或加密插值，不能恢复原始数据没有的近岸细节。</div></section>
+<section id="build"><h2>6. 构建成果，给别人使用</h2>
+<pre><code>npm run build
+npm run preview</code></pre>
+<p>构建生成完整 dist。预览默认地址 <code>http://127.0.0.1:4173/</code>。端口占用时会报错停止；关闭占用服务或用 <code>npm run preview -- --port 4174</code> 显式换端口，并同步核对地图令牌允许地址。交付给别人时保留 dist 内全部文件；不能只发送其中的 index.html。</p>
+<p>把 dist 放到静态网站，即可通过网址查看。接收机已有 Python 时，也可在 dist 目录运行：</p>
+<pre><code>py -m http.server 8000 --bind 127.0.0.1</code></pre>
+<p>浏览器访问 <code>http://127.0.0.1:8000/</code>。这仅供当前电脑查看，不是可直接发给别人的公网地址。Cesium 地图令牌允许地址要与真实访问网址匹配。</p>
+<p>交付源码时提供 src、public、scripts、package.json、pnpm-lock.yaml、pnpm-workspace.yaml、构建配置和说明；接收方自建 .env.local 与运行环境。仅看成果无需 CDS。数据、地图账户与标题具体要改哪里，见《数据与交付说明》。</p>
+<p class="note">Cesium 程序与资源随构建交付，默认网络底图仍需联网。完全离线还要另外配置可用的本地底图。</p></section>
+<section id="troubleshooting"><h2>7. 常见问题</h2>
+<details><summary>页面空白或资源 404</summary><p>不要双击开发入口；开发用 npm run dev。构建成果交付完整 dist 并用 HTTP 服务打开，检查 data、assets 和 Cesium 资源目录没有遗漏。</p></details>
+<details><summary>更新数据后还是旧画面</summary><p>检查 build_json 是否发布到 public/data/scs_field.json，是否误加 --json-only。开发环境刷新浏览器；生产环境重新构建并部署整个 dist，再刷新缓存。</p></details>
+<details><summary>地图无法显示或 401、403</summary><p>检查 .env.local 中 VITE_CESIUM_ION_TOKEN、地图所需权限、Allowed URLs 和网络。修改环境变量后重启 dev；生产版重新构建。不要把 CDS 令牌填入这里。</p></details>
+<details><summary>播放按钮不可用或温盐流不能每小时变化</summary><p>先选择要素并确保区间至少 2 帧。现有温盐流是月平均，只能按真实月份播放。波浪若被处理成日 / 月平均，改用 --frequency hour 从原始资料重处理。</p></details>
+<details><summary>下载认证或数据许可失败</summary><p>使用本人的 CDS 配置，检查 CDSAPI_RC、CDSAPI_URL、CDSAPI_KEY 是否指向旧账户；数据集条款需在官方页面接受。--setup 验证认证，不代替接受条款。</p></details>
+<details><summary>处理没有找到数据或提示冲突</summary><p>确认 NetCDF 已解包、时间范围正确，--input-dir 指向实际目录。冲突版本要移出整个输入目录；移入子目录仍会被扫描。</p></details>
+<details><summary>Node 或依赖安装失败</summary><p>在工程根目录操作，Node 满足 package.json 的 engines；pnpm 使用匹配的版本和锁文件。npm 用户用 npm install，不要把 pnpm-lock.yaml 当 npm 锁。</p></details></section>
+<section id="reference"><h2>8. 工程与参数速查</h2>
+<div class="table-wrap"><table><thead><tr><th>位置</th><th>作用</th></tr></thead><tbody><tr><td>src/App.vue / src/components/</td><td>Vue 页面、导入控件、播放控件与数据信息</td></tr><tr><td>src/composables/useOceanPlatform.js</td><td>Vue 状态和地图引擎连接</td></tr><tr><td>src/engine/createOceanEngine.js</td><td>Cesium 地球、色面、粒子与时间播放</td></tr><tr><td>src/config.js / src/styles/platform.css</td><td>配置 / 样式</td></tr><tr><td>public/data / public/docs</td><td>启动 JSON、陆地遮罩 / 独立说明</td></tr><tr><td>download_data.py / build_json.py</td><td>下载 / 处理并发布</td></tr><tr><td>check_json.py / pack_json.py</td><td>校验 / 单独发布已有 JSON</td></tr><tr><td>dist/</td><td>构建后交付的完整静态网站</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th>处理参数</th><th>含义</th></tr></thead><tbody><tr><td>--start / --end</td><td>UTC 包含首尾；不填处理全部可用时间。</td></tr><tr><td>--frequency hour / day / month / native</td><td>小时 / 日 / 月聚合或原时次，默认 hour，不细分月平均。</td></tr><tr><td>--step 0.5</td><td>当前成果网格；默认 0.2°。</td></tr><tr><td>--bounds 105 128 0 42</td><td>处理矩形：西、东、南、北。</td></tr><tr><td>--fields temperature salinity u v swh mwd mwp</td><td>英文、空格分隔的处理字段。</td></tr><tr><td>--publish-to public/data/scs_field.json</td><td>Vue 静态 JSON 发布路径。</td></tr><tr><td>--json-only</td><td>只生成校验后的处理 JSON，不发布。</td></tr></tbody></table></div>
+</section>
+<footer>更新日期：2026-10-23。当前数据快照：波浪 1,464 个小时帧，温盐流各 2 个月平均帧；47 × 85、0.5° 网格。之后以新处理的元数据为准。本文不包含账户令牌。</footer>
+</div></main></body></html>

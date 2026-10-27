@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>海洋可视化平台｜数据与交付说明</title>
+<style>
+:root{--ink:#173749;--muted:#587283;--line:#d9e5ec;--accent:#087f92;--soft:#eef7fa;--navy:#102f44;color-scheme:light}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:20px}body{margin:0;background:#eef3f6;font:15px/1.85 "Microsoft YaHei","PingFang SC",sans-serif;color:var(--ink)}main{max-width:1120px;margin:26px auto 48px;background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden}header{padding:30px 38px;background:linear-gradient(120deg,#102f44,#145e70);color:#fff}header p{margin:7px 0;color:#e0f0f5}h1{margin:7px 0 11px;font-size:29px;line-height:1.4}.eyebrow{font-size:12px;letter-spacing:2px;color:#b9dfe8}.stamp{font-size:12px}.body{padding:0 38px 30px}nav{display:flex;flex-wrap:wrap;gap:7px;padding:20px 0;border-bottom:1px solid var(--line)}nav a{font-size:13px;background:var(--soft);text-decoration:none;border-radius:5px;padding:4px 11px}a{color:var(--accent);text-underline-offset:3px}h2{font-size:22px;margin:30px 0 13px;line-height:1.5}h3{font-size:17px;margin:21px 0 9px}p{margin:9px 0}ol,ul{padding-left:23px;margin:10px 0}li{margin:5px 0}section+section{border-top:1px solid var(--line);margin-top:25px;padding-top:1px}.callout{padding:12px 16px;border-left:4px solid #1294a6;border-radius:0 7px 7px 0;background:#eef9fb;margin:15px 0}.note{font-size:13px;color:var(--muted)}.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:16px 0}.card{border:1px solid var(--line);border-radius:8px;padding:12px 15px}.card b{display:block;font-size:19px;color:var(--accent)}.card span{font-size:13px;color:var(--muted)}.table-wrap{overflow-x:auto}table{border-collapse:collapse;width:100%;margin:12px 0;font-size:13px}th,td{padding:10px 11px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{background:#edf4f7;font-weight:700}code,pre{font-family:Consolas,"Microsoft YaHei",monospace}code{font-size:.92em;background:#edf3f7;padding:2px 5px;border-radius:4px;overflow-wrap:anywhere}pre{padding:14px 17px;background:var(--navy);color:#edf8ff;border-radius:8px;overflow:auto;line-height:1.65}pre code{font-size:13px;padding:0;background:none;white-space:pre;overflow-wrap:normal}.tag{display:inline-block;border-radius:4px;padding:1px 7px;background:#e3f2eb;color:#23664b;font-size:12px}.plain{background:#e9eff4;color:#526c7f}.check{list-style:none;padding-left:0}.check li{padding-left:24px;position:relative}.check li:before{content:"□";position:absolute;left:1px;color:var(--accent)}.flow{background:var(--soft);padding:12px 16px;border-radius:7px;font-weight:600;color:#1d6277}.toolbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:15px}.toolbar button{border:0;border-radius:6px;padding:7px 14px;background:#fff;color:#125066;cursor:pointer;font:inherit;font-size:13px}.toolbar a{color:#dbf3fa;font-size:13px}footer{border-top:1px solid var(--line);padding-top:16px;margin-top:26px;font-size:12px;color:var(--muted)}:focus-visible{outline:3px solid #37b4c7;outline-offset:3px}
+@media(max-width:720px){body{font-size:14px}main{margin:0;border:0;border-radius:0}header{padding:24px 20px}.body{padding:0 20px 24px}h1{font-size:25px}.cards{grid-template-columns:1fr;gap:8px}.card{padding:9px 13px}th,td{padding:8px}pre{padding:12px}}
+@media print{body{background:#fff;color:#000;font-size:11pt}main{border:0;margin:0;max-width:none}header{background:#fff;color:#102f44;padding:10px 0 15px}header p,.eyebrow,.stamp{color:#203e50}.body{padding:0}nav,.toolbar{display:none}section{break-before:auto}h2,h3{break-after:avoid}tr,.card,.callout{break-inside:avoid}pre{background:#f2f5f7;color:#102f44;white-space:pre-wrap;overflow:visible}pre code{white-space:pre-wrap;overflow-wrap:anywhere}a{color:#163e54}.table-wrap{overflow:visible}table{font-size:9pt}.cards{gap:8px}}
+</style>
+</head>
+<body>
+<main>
+<header>
+<div class="eyebrow">OCEAN PLATFORM · 数据与交接文档</div>
+<h1>海洋可视化平台：数据与交付说明</h1>
+<p>Vue 3 工程版：说明数据来源与精度，逐项列出交付、配置、开发和部署方法。</p>
+<p class="stamp">核对日期：2026-10-23 · 以当前 Vue 工程、Python 处理流程及已有数据为准</p>
+<div class="toolbar"><button type="button" onclick="window.print()">打印 / 保存为 PDF</button><a href="使用说明.html">日常操作说明</a></div>
+</header>
+<div class="body"><div class="note"><strong>新增完整版：</strong>接收者需在自己电脑下载、导入处理并可视化时，使用 Windows 完整运行包 OceanPlatform.exe，见 <a href="完整版平台使用说明.html">完整版平台使用说明</a>。下文关于 dist、start_platform.py 的静态交付属于仅查看模式；开发入口 platform_server.py 提供本机完整服务。</div>
+<nav aria-label="文档目录"><a href="#start">先选交付方式</a><a href="#data">数据说明</a><a href="#precision">精度与动画</a><a href="#format">数据处理与格式</a><a href="#changes">修改清单</a><a href="#cesium">地图令牌</a><a href="#environment">新电脑环境</a><a href="#cds">下载账户</a><a href="#parameters">日期与海域</a><a href="#website">发文件或发网址</a><a href="#acceptance">交付验收</a></nav>
+
+<section id="start">
+<h2>1. 先选交付方式</h2>
+<div class="callout"><strong>平台前端采用 Vue 3 + Vite，地球展示采用 Cesium。</strong>Python 负责下载和处理海洋数据。现在需要通过 HTTP(S) 打开平台；根目录的 index.html 是 Vue 开发入口，不能再把它作为单文件成果直接发给别人。</div>
+<div class="table-wrap"><table><thead><tr><th>对方要做什么</th><th>交付内容</th><th>对方如何使用</th></tr></thead><tbody>
+<tr><td>只看已有成果</td><td>构建后的<strong>完整 dist 文件夹</strong>；其中含网页、程序、数据和说明</td><td>放到静态服务器，以网址访问；本机查看也要启动 HTTP 服务。无需 Node、Python 处理环境或 CDS 账户。</td></tr>
+<tr><td>继续开发前端</td><td>源码、public、package.json、pnpm-lock.yaml、pnpm-workspace.yaml、配置示例；不附 node_modules</td><td>安装兼容 Node，配置自己的 .env.local，安装依赖后运行开发服务器。</td></tr>
+<tr><td>自行下载、处理和发布</td><td>开发工程 + 四个 Python 脚本；按需要附原始 NetCDF</td><td>再建立自己的 Python 环境、配置本人的 CDS，处理数据后重新构建并发布 dist。</td></tr>
+</tbody></table></div>
+<p><strong>交付前重点核对：</strong>地图令牌与允许访问的地址、前端配置、数据文件、接收机运行环境。只看成果的人不需要填写 CDS 令牌。</p>
+</section>
+
+<section id="data">
+<h2>2. 这套平台使用的是什么数据？</h2>
+<p>目前是 <strong>ECMWF/Copernicus 再分析数据的海表可视化</strong>。再分析融合模型与观测，用于重建海洋状态；页面上的每个格点并不代表那里有一个实测站。三维地球用于展示位置，当前导出的海洋变量取海表或最浅层。</p>
+<div class="table-wrap"><table>
+<thead><tr><th>页面要素 / JSON 字段</th><th>来源及原始变量</th><th>单位与含义</th><th>本项目当前时次</th></tr></thead>
+<tbody>
+<tr><td>温度 / <code>temperature</code></td><td>ORAS5：<code>sosstsst</code>，海表温度</td><td>℃；输入为 K 时转换为 ℃</td><td>2026 年 6、7 月，2 个<strong>月平均</strong>帧</td></tr>
+<tr><td>盐度 / <code>salinity</code></td><td>ORAS5：<code>sosaline</code>，海表盐度</td><td>PSU，实用盐度</td><td>同上，2 个月平均帧</td></tr>
+<tr><td>海流 / <code>u</code>、<code>v</code></td><td>ORAS5：<code>vozocrte</code>、<code>vomecrtn</code></td><td>m/s；u 向东为正、v 向北为正；流速为 √(u²+v²)。处理时取最浅层。</td><td>同上，u/v 各 2 个月平均帧，成对使用</td></tr>
+<tr><td>波高 / <code>swh</code></td><td>ERA5 WAM：有效波高</td><td>m，风浪与涌浪组合的有效波高</td><td>2026-06-01 00:00 至 2026-07-31 23:00 UTC，共 1,464 个小时帧</td></tr>
+<tr><td>波向 / <code>mwd</code></td><td>ERA5 WAM：平均波向</td><td>度；用于表达波浪来向，粒子显示时转换为传播方向</td><td>同上，1,464 个小时帧</td></tr>
+<tr><td>波周期 / <code>mwp</code></td><td>ERA5 WAM：平均波周期</td><td>秒；已保存在数据中，当前页面没有独立“周期”按钮</td><td>同上，1,464 个小时帧</td></tr>
+</tbody></table></div>
+<p class="note">来源核对：<a href="https://cds.climate.copernicus.eu/datasets/reanalysis-era5-single-levels?tab=overview">ERA5 逐小时数据集</a>、<a href="https://cds.climate.copernicus.eu/datasets/reanalysis-oras5?tab=overview">ORAS5 月平均数据集</a>。ORAS5 原生为约 0.25° 的三极网格；本项目这次把所有要素统一到 0.5° 经纬度网格。ERA5 波浪下载网格为 0.5°。</p>
+<div class="cards"><div class="card"><b>47 × 85</b><span>当前统一网格：47 个经度点、85 个纬度点</span></div><div class="card"><b>0.5° × 0.5°</b><span>相邻经度、纬度格点的角度间隔</span></div><div class="card"><b>105–128°E · 0–42°N</b><span>当前处理矩形范围，含中国近海及周边区域</span></div></div>
+<p>JSON 中有 <strong>1,466 个时间记录</strong>：1,464 个小时记录放波浪字段，另有 2 个月份记录放温盐流。<strong>不能把它说成“所有要素各有 1,466 小时数据”。</strong>切换要素后，播放器只列出该要素的可用时次。</p>
+<p class="note">本文是当前成果快照。重新下载、处理后，以 <code>metadata.fields</code>、页面日期及 <code>check_json.py</code> 输出为准。处理后 JSON 约 114 MB，以独立文件提供，不再内嵌在 HTML；完整原始资料目录约 3.85 GB，含 ZIP 和解包后的 NetCDF。Vue 工程改变了交付形式，没有改变这批数据本身的时次与网格。</p>
+</section>
+
+<section id="precision">
+<h2>3. 数据网格、小时播放和平滑动画分别表示什么？</h2>
+<h3>空间精度：0.5° 不是 0.5 公里</h3>
+<p>纬度方向每 0.5° 约 56 km；中国近海纬度范围内，经度方向约 41–56 km。因此当前波浪适合看区域尺度变化，无法凭显示插值还原港口、海湾内部几公里的细节。温盐流本次也已重采样为相同的 0.5° 输出网格。</p>
+<p>“高清”把色面贴图和海岸边缘画得更清楚；<code>--step 0.1</code> 会生成更密的输出点，并显著增大文件。两者都不会增加原始波浪数据中不存在的真实细节。</p>
+<h3>时间精度：逐小时、月平均各自保留</h3>
+<ul>
+<li>所有下载、处理与页面时钟按 <strong>UTC</strong>。北京时间为 UTC 加 8 小时，例如 2026-06-01 00:00 UTC = 北京时间当天 08:00。</li>
+<li>波浪每小时一帧；现有 ORAS5 温盐流是月平均。把处理参数设成 <code>hour</code>，不会把月平均拆成真实小时变化。</li>
+<li>月份标签如 <code>2026-06</code> 表示整个月的平均，原文件中间月份时间戳也不应理解为那一瞬间的观测。</li>
+<li>页面播放的是已经下载的历史时段，不会自动获取最新观测。缺失小时不会补造；当前帧缺少某字段时，悬浮框显示“—”。</li>
+</ul>
+<h3>动画精度：渐变与粒子属于表达方式</h3>
+<p>两幅数据贴图之间的平滑渐变用于减少闪屏，不新增数据时次。海流粒子用 u/v 驱动，并做显示加速；波浪粒子用波向决定方向，当前 <code>buildWaveUV(0.6)</code> 的速度是显示参数，<strong>并非由周期计算的真实波速</strong>。粒子轨迹不能直接当作浮标实测轨迹或真实传播距离。数值分析应使用对应字段及时间元数据。</p>
+<p class="note">海岸遮罩使用 public/data/land-polygons.json 中的 <a href="https://www.naturalearthdata.com/downloads/10m-physical-vectors/10m-land/">Natural Earth 1:1,000 万陆地数据</a>，只裁剪色面，不提高海洋数据分辨率。“10m”在该数据系列名称中指 1:1,000 万比例尺，不是 10 米精度。当前遮罩覆盖约 98–146°E、6°S–50°N。</p>
+</section>
+
+<section id="format">
+<h2>4. 数据流程与 Vue 工程结构</h2>
+<p class="flow">download_data.py → 01_data / NetCDF → build_json.py → 02_Geojson/scs_field.json → 校验并发布 public/data/scs_field.json → Vue 页面读取 → Vite 构建 dist</p>
+<ol>
+<li><strong>下载：</strong>波浪按日期、小时和区域获取；ORAS5 按区间覆盖到的月份获取全球资料，海流下载包含深度层。</li>
+<li><strong>读取与统一：</strong>递归读取受支持的 NetCDF，筛选时间、裁剪区域、取最浅层，重采样到共同网格，并做支持的单位转换。缺测保留 null；聚合波向使用圆周平均。</li>
+<li><strong>生成并发布：</strong>build_json.py 校验后生成 02_Geojson/scs_field.json，默认再发布到 public/data/scs_field.json。index.html 不再保存海洋数据。</li>
+<li><strong>前端加载：</strong>Vue 启动后从静态 JSON 加载数据和陆地遮罩；导入按钮仍可读取用户选择的本地 JSON。</li>
+<li><strong>正式发布：</strong>运行 npm run build 后，数据与程序一起进入 dist。更新 public 下的数据后，开发页面刷新即可；已部署的 dist 必须重新构建和部署。</li>
+</ol>
+<div class="table-wrap"><table><thead><tr><th>文件 / 目录</th><th>职责</th></tr></thead><tbody>
+<tr><td><code>src/App.vue</code></td><td>主页面与组件组织</td></tr>
+<tr><td><code>src/components/ImportPanel.vue</code></td><td>数据导入、要素选择及画质设置</td></tr>
+<tr><td><code>src/components/TimeControls.vue</code></td><td>时间区间、播放、方向和可拖动时间轴</td></tr>
+<tr><td><code>src/components/DataDetails.vue</code></td><td>当前点数据、数据信息与色标</td></tr>
+<tr><td><code>src/composables/useOceanPlatform.js</code></td><td>Vue 状态与地图引擎之间的连接</td></tr>
+<tr><td><code>src/engine/createOceanEngine.js</code></td><td>Cesium 地球、数据图层、粒子、播放和资源释放</td></tr>
+<tr><td><code>src/config.js</code> / <code>src/styles/platform.css</code></td><td>前端配置 / 页面样式</td></tr>
+<tr><td><code>public/data/scs_field.json</code></td><td>页面启动时读取的实际海洋数据</td></tr>
+<tr><td><code>public/data/land-polygons.json</code></td><td>陆地遮罩，独立于海洋数值数据</td></tr>
+<tr><td><code>public/docs/</code></td><td>随构建一起交付的独立说明文件</td></tr>
+<tr><td><code>index.html</code></td><td>Vite / Vue 开发入口；不再用作数据模板</td></tr>
+</tbody></table></div>
+<p>使用 Vue 3.5.44、Vite 8.3.5、Cesium 1.118.0，具体依赖以 package.json 和 pnpm-lock.yaml 为准。架构分离后，界面布局、地图渲染与 Python 数据处理可分别维护。框架参考：<a href="https://vuejs.org/guide/introduction.html">Vue 官方指南</a>、<a href="https://vite.dev/guide/">Vite 官方指南</a>。</p>
+<h3>JSON 的含义没有改变</h3>
+<div class="table-wrap"><table><thead><tr><th>JSON 项</th><th>内容</th></tr></thead><tbody>
+<tr><td><code>bounds / nx / ny</code></td><td>范围与网格尺寸；每个数组是 ny 行、每行 nx 个值，纬度自南向北、经度自西向东。</td></tr>
+<tr><td><code>frames</code></td><td>时间记录，每条含 time 和该时次实际存在的字段。</td></tr>
+<tr><td><code>metadata.fields</code></td><td>各字段单位、来源、源 / 输出时间分辨率、时段与帧数。</td></tr>
+<tr><td><code>null</code></td><td>缺测值；不能改成 0，0 与缺测的含义不同。</td></tr>
+</tbody></table></div>
+<p>02_Geojson 是沿用的目录名；scs_field.json 是平台网格格式，<strong>不是标准 GeoJSON FeatureCollection</strong>。分类导入要求范围和网格一致；海流 u/v 要配对，波浪粒子需要 swh/mwd。转换器不是任意 NetCDF 的通用读取器。</p>
+<p>只有处理好的 JSON，需要单独发布时运行：</p>
+<pre><code>.\.venv\Scripts\python.exe check_json.py 02_Geojson/scs_field.json
+.\.venv\Scripts\python.exe pack_json.py --data 02_Geojson/scs_field.json</code></pre>
+<p>pack_json.py 默认校验并发布到 public/data/scs_field.json；<code>--out</code> 可指定另一 JSON 路径。旧版独立 HTML 仅保留显式模板兼容模式，不用于日常 Vue 构建，也不能覆盖 Vue 的 index.html。</p>
+</section>
+
+<section id="changes">
+<h2>5. 给别人使用：具体改哪里、怎么改</h2>
+<div class="table-wrap"><table><thead><tr><th>要修改什么</th><th>位置 / 搜索关键词</th><th>具体做法</th></tr></thead><tbody>
+<tr><td>地图客户端令牌</td><td>项目根目录 <code>.env.local</code>：<code>VITE_CESIUM_ION_TOKEN</code></td><td>填入由接收方或部署方维护的 Cesium 客户端令牌；设置允许地址。改后重启开发服务器；正式版重新构建。</td></tr>
+<tr><td>平台标题</td><td><code>.env.local</code>：<code>VITE_APP_TITLE</code></td><td>填接收单位需要的名称。不会改变数据真实来源。</td></tr>
+<tr><td>前端配置 / 默认视角</td><td><code>src/config.js</code>：<code>initialBounds</code></td><td>按 west、south、east、north 修改初始海域，再构建。默认 { west: 105, south: 0, east: 128, north: 42 }；镜头改变不会生成新数据。</td></tr>
+<tr><td>界面布局和文字</td><td><code>src/App.vue</code>、<code>src/components/</code>、<code>src/styles/platform.css</code></td><td>主页面、导入栏、播放栏和详情栏分别修改，页面样式集中调整。</td></tr>
+<tr><td>启动数据</td><td><code>public/data/scs_field.json</code></td><td>优先通过 build_json.py 重新生成发布；已有合法 JSON 用 pack_json.py 发布。若改文件名，同时修改 src/config.js 的 dataUrl；生产版再构建部署。</td></tr>
+<tr><td>海岸遮罩</td><td><code>public/data/land-polygons.json</code></td><td>处理范围超出当前遮罩时另行准备兼容格式的陆地多边形，核对覆盖区域。若改文件名，同步修改 src/config.js 的 landUrl。</td></tr>
+<tr><td>数据日期、海域、精度</td><td>Python 参数 <code>--start / --end / --area / --bounds / --step</code></td><td>修改运行参数，通常不改 Python 源码。下载区域和处理区域参数顺序不同，见第 9 节。</td></tr>
+<tr><td>Python 解释器</td><td>新电脑 <code>.venv</code> 与 PyCharm 解释器设置</td><td>重新创建环境并安装依赖，指向接收目录的 .venv\Scripts\python.exe。</td></tr>
+<tr><td>CDS 私人下载账户</td><td>接收者用户目录 / 本机配置，不在 Vue 内</td><td>仅需要自行下载时配置本人的 CDS。不可写入 VITE_ 环境变量或 public 目录。</td></tr>
+<tr><td>正式访问地址</td><td>静态服务器设置、Cesium Allowed URLs</td><td>替换为真实部署域名、协议与端口。localhost / 127.0.0.1 只代表当前电脑。</td></tr>
+</tbody></table></div>
+<div class="callout">Vue / Vite 工程需要 package.json、配置、组件与 JSON 等文件，不能再按旧的“只留 html 和 py”方式精简。交付给只看成果的人时，交完整 dist 文件夹即可。</div>
+<p>Python 默认相对路径仍基于脚本自身目录，项目换盘或换用户名时通常不改 ROOT。前端资源使用相对部署路径；不要批量把代码改成个人 D 盘绝对路径。</p>
+</section>
+
+<section id="cesium">
+<h2>6. 地图令牌与标题配置</h2>
+<ol>
+<li>由平台维护者或接收单位在 <a href="https://ion.cesium.com/tokens">Cesium ion 令牌页面</a>创建此应用使用的客户端令牌。</li>
+<li>在项目根目录参考 .env.example 新建 <code>.env.local</code>，按下面格式填入接收方自己的值；示例占位符不能原样运行。</li>
+<li>按实际访问地址配置 Allowed URLs，权限只保留地图展示所需范围。客户端使用最小权限；不要加入账户管理权限。参考<a href="https://cesium.com/learn/ion/cesium-ion-access-tokens/">官方令牌说明</a>。</li>
+</ol>
+<pre><code>VITE_CESIUM_ION_TOKEN=替换为该部署的Cesium客户端令牌
+VITE_APP_TITLE=中国海域三维可视化平台</code></pre>
+<p>改动后，开发环境停止再运行 <code>npm run dev</code>；正式部署运行 <code>npm run build</code> 并替换完整 dist。只修改服务器上的 .env.local 不会改变已经构建的浏览器程序。</p>
+<p><strong>VITE_ 变量会进入浏览器程序。</strong>Cesium 客户端令牌因此可被访问者读取，应通过权限、资产范围和允许网址约束；它不是保密的服务器密钥。不要将 CDS 令牌、CDSAPI_KEY 或其他私密账户信息改写为 VITE_ 变量。</p>
+<p>只看成果的人无需逐人注册 Cesium，维护者统一提供配置即可。地图服务用量归属于提供令牌的账户，应明确维护人并保留地图署名。本文不包含真实令牌，.env.example 也不应包含真实令牌。</p>
+</section>
+
+<section id="environment">
+<h2>7. 新电脑：工程文件和运行环境</h2>
+<h3>开发工程建议交付内容</h3>
+<pre><code>OceanPlatform/
+  package.json / pnpm-lock.yaml    依赖与锁定版本
+  pnpm-workspace.yaml              pnpm 兼容锁定与依赖构建策略
+  vite.config.js / index.html      构建配置与 Vue 入口
+  .env.example                    配置示例，不含真实令牌
+  src/                            Vue 组件、状态、地图引擎、样式
+  scripts/                        本地资源准备脚本
+  public/
+    data/scs_field.json            启动海洋数据
+    data/land-polygons.json        陆地遮罩
+    docs/                         独立说明
+  download_data.py                 数据下载
+  build_json.py                    转换、校验并发布静态 JSON
+  check_json.py / pack_json.py     校验 / 发布工具
+  start_platform.py                在 PyCharm 启动已构建的 dist，默认本机 8000 端口
+  使用说明.html / 数据与交付说明.html
+  01_data/                        可选：复现时附 NetCDF
+  02_Geojson/scs_field.json        可选：处理成果存档</code></pre>
+<p>不交付原电脑的 node_modules、.venv、.idea、__pycache__、个人 .cdsapirc 或私密凭据目录。.env.local 由接收者自行建立。四个 Python 脚本保持同目录；源代码交付时同时保留全部实际使用的配置与 scripts 文件。</p>
+<h3>Vue 开发环境</h3>
+<p>安装 package.json 中 engines 支持的 Node.js。当前工程写明 <code>^20.19.0 || &gt;=22.12.0</code>；建议使用 Node 22.12 或更新的兼容 LTS。pnpm 11 本身要求 Node 22 或以上；Node 20.19 系列应选择 npm。使用 npm 或 pnpm 任选一套流程，不必混合两种依赖安装方式。</p>
+<p><strong>使用锁定版本，推荐 pnpm：</strong>准备 package.json 所写的 pnpm 版本后，在工程根目录运行：</p>
+<pre><code>pnpm install --frozen-lockfile
+pnpm run dev</code></pre>
+<p><strong>使用 npm：</strong>若接收端只有 npm，可运行以下命令。本工程提供 pnpm-lock.yaml，没有 npm 锁；npm install 会自行解析依赖，不使用 pnpm 锁；package.json 提供对应 npm overrides。pnpm-workspace.yaml 必须随源码交付，其中包含旧版 Cesium 的 zip.js 2.7.34 兼容锁定及 protobufjs:false 依赖构建策略；不能只留下锁文件而遗漏此配置。</p>
+<pre><code>npm install
+npm run dev</code></pre>
+<p>默认访问 <code>http://127.0.0.1:5173/</code>。已启用 strictPort，端口被占用时会报错停止；关闭占用服务，或用 <code>npm run dev -- --port 5174</code> 显式换端口，并让 Cesium 令牌允许新地址。保留终端运行；停止后开发网址不可继续使用。根目录 index.html 应由 Vite 提供，不要直接双击。源码中的组件变更由开发服务器更新；环境变量变更需重启。</p>
+<h3>Python 环境：仅下载、处理者需要</h3>
+<p>当前核实机器为 64 位 Python 3.13.9。接收机安装对应 Python 后，在工程根目录执行：</p>
+<pre><code>py -3.13 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install --upgrade pip
+.\.venv\Scripts\python.exe -m pip install numpy pandas xarray scipy h5netcdf h5py "cdsapi&gt;=0.7.7" requests</code></pre>
+<p>PyCharm 解释器选择新目录的 .venv\Scripts\python.exe。当前代码用 h5netcdf 读取 NetCDF4/HDF，用 scipy 处理 NetCDF3；仅安装 netCDF4 不能替代这些依赖。图形化 CDS 配置需要 tkinter；没有该模块时可手工配置。</p>
+<p class="note">只接收构建好的 dist 时，不需要 Node 与这些 Python 库；可以使用接收单位已有的静态服务器。Python http.server 只是有 Python 时的一种本机查看方式。</p>
+</section>
+
+<section id="cds">
+<h2>8. 对方要下载新数据：配置自己的 CDS</h2>
+<ol>
+<li>对方登录自己的 CDS 账户，在 <a href="https://cds.climate.copernicus.eu/how-to-api">官方 API 配置页</a>取得个人访问令牌。</li>
+<li>在需要的数据集下载页接受其条款；<code>--setup</code> 只验证认证，不代替这一步。<a href="https://cds.climate.copernicus.eu/how-to-api">CDS 官方安装与使用说明</a></li>
+<li>没有自定义 <code>CDSAPI_RC</code> 时，在项目目录运行下面命令，向本地遮蔽输入窗口粘贴自己的令牌：</li>
+</ol>
+<pre><code>.\.venv\Scripts\python.exe download_data.py --setup</code></pre>
+<p>也可在对方的用户目录新建 <code>%USERPROFILE%\.cdsapirc</code>，写入这两行，用本人令牌替换占位符：</p>
+<pre><code>url: https://cds.climate.copernicus.eu/api
+key: &lt;PERSONAL-ACCESS-TOKEN&gt;</code></pre>
+<div class="table-wrap"><table>
+<thead><tr><th>当前代码选择配置文件的顺序</th><th>说明</th></tr></thead><tbody>
+<tr><td>1. 环境变量 <code>CDSAPI_RC</code></td><td>已设置则使用其指定文件；建议写绝对路径。此时 <code>--setup</code> 提示后返回，不覆盖该自定义文件。</td></tr>
+<tr><td>2. <code>%USERPROFILE%\.cdsapirc</code></td><td>没有 CDSAPI_RC 且此文件存在时使用。</td></tr>
+<tr><td>3. 项目提供的本机备用位置</td><td><code>%USERPROFILE%\Documents\Codex\.local-credentials\CDS\.cdsapirc</code>；由程序按当前用户计算，不含固定用户名。</td></tr>
+</tbody></table></div>
+<p>已安装的 cdsapi 还会优先读取环境变量 <code>CDSAPI_URL</code>、<code>CDSAPI_KEY</code>，再从配置文件补足缺失值。换账户后仍用旧配置时，检查终端和 PyCharm 运行配置中的这些变量。不要在日志或交接文档里输出令牌来排查。</p>
+<p><strong>不要把原电脑的 CDS 凭据复制给接收者。</strong>只使用已经下载好的 NetCDF 或已生成网页时，可以完全跳过本节。</p>
+</section>
+
+<section id="parameters">
+<h2>9. 下载、处理与发布：可复制的命令</h2>
+<h3>先用独立试验目录验证两天波浪</h3>
+<p>下列第一条只预览请求，不联网；第二条才实际下载。最后一条<strong>会覆盖默认处理结果并将启动数据换成这两天的波浪</strong>，不包含温盐流。想保留原演示，请先在工程副本里试验。</p>
+<pre><code>.\.venv\Scripts\python.exe download_data.py --start 2026-06-01 --end 2026-06-02 --fields wave --output-dir 01_data/trial_wave --plan
+
+.\.venv\Scripts\python.exe download_data.py --start 2026-06-01 --end 2026-06-02 --fields wave --output-dir 01_data/trial_wave
+
+.\.venv\Scripts\python.exe build_json.py --input-dir 01_data/trial_wave --start 2026-06-01 --end 2026-06-02 --frequency hour --step 0.5 --fields swh mwd mwp</code></pre>
+<p>已下载当前完整资料时，无需重复下载：</p>
+<pre><code>.\.venv\Scripts\python.exe build_json.py --input-dir 01_data --start 2026-06-01 --end 2026-07-31 --frequency hour --step 0.5</code></pre>
+<p>默认生成 02_Geojson/scs_field.json 并发布 public/data/scs_field.json。开发服务器中刷新页面读取新资料；正式版继续执行 npm run build，再部署新 dist。</p>
+<h3>三个位置的经纬度顺序</h3>
+<div class="table-wrap"><table><thead><tr><th>位置</th><th>顺序</th><th>示例</th></tr></thead><tbody>
+<tr><td>下载</td><td><code>--area 北 西 南 东</code></td><td><code>--area 42 105 0 128</code>，只影响 ERA5；ORAS5 仍下载全球资料。</td></tr>
+<tr><td>处理</td><td><code>--bounds 西 东 南 北</code></td><td><code>--bounds 105 128 0 42</code></td></tr>
+<tr><td>Cesium 矩形镜头</td><td><code>fromDegrees(西, 南, 东, 北)</code></td><td><code>fromDegrees(105,0,128,42)</code>；通常直接改 src/config.js 的 initialBounds 对象。</td></tr>
+</tbody></table></div>
+<p>例如东海矩形下载用 <code>--area 34 118 24 128</code>，处理用 <code>--bounds 118 128 24 34</code>，src/config.js 的 initialBounds 改为 <code>{ west: 118, south: 24, east: 128, north: 34 }</code>。超出当前陆地遮罩范围时，需同步更新 public/data/land-polygons.json。</p>
+<div class="table-wrap"><table><thead><tr><th>需求</th><th>参数</th><th>说明</th></tr></thead><tbody>
+<tr><td>下载类型</td><td><code>download_data.py --fields 海温,盐度,海流,波浪</code></td><td>支持中文、编号和英文；没有 --plan 就实际提交下载。</td></tr>
+<tr><td>处理字段</td><td><code>build_json.py --fields temperature salinity u v swh mwd mwp</code></td><td>英文、空格分隔，和下载类型参数不同。</td></tr>
+<tr><td>开始 / 结束</td><td><code>--start / --end</code></td><td>月份、日期或 UTC ISO 时刻，包含首尾；结束日期包含当天全部小时。</td></tr>
+<tr><td>时间精度</td><td><code>--frequency hour / day / month / native</code></td><td>默认 hour；月平均不会被细分成真实小时。</td></tr>
+<tr><td>网格间隔</td><td><code>--step 0.5</code></td><td>本次成果 0.5°；脚本默认 0.2°。减小间隔会插值并增大数据。</td></tr>
+<tr><td>下载 / 处理目录</td><td><code>--output-dir</code>；<code>--input-dir / --output</code></td><td>默认 01_data；处理输出 02_Geojson/scs_field.json。相对路径以脚本目录为准。</td></tr>
+<tr><td>发布到另一 JSON</td><td><code>build_json.py --publish-to public/data/another.json</code></td><td>只改变发布位置；页面仍默认读取 scs_field.json，需同步修改 src/config.js 的 dataUrl，或手动导入另一文件。</td></tr>
+<tr><td>只生成处理结果</td><td><code>build_json.py --json-only</code></td><td>跳过 public/data 发布；页面启动数据不会自动变化。</td></tr>
+<tr><td>旧 --html 参数</td><td><code>--html</code> 已停用</td><td>会报出迁移提示，改用 --publish-to；Vue 入口不能作为数据输出。</td></tr>
+</tbody></table></div>
+<p>输入目录递归扫描 NetCDF，不读取尚未解包的 ZIP。冲突版本应移出输入目录，移进其子目录仍会被扫描。</p>
+</section>
+
+<section id="website">
+<h2>10. 构建、交付与网站部署</h2>
+<h3>开发完成后构建</h3>
+<pre><code>npm run build
+npm run preview</code></pre>
+<p>pnpm 用户把 npm 换成 pnpm。构建输出到 dist，预览默认地址 <code>http://127.0.0.1:4173/</code>。端口占用时会报错停止；可关闭占用服务或用 <code>npm run preview -- --port 4174</code> 显式换端口，并同步核对地图令牌允许地址。preview 用于检查构建成果；正式对外访问使用静态服务器。</p>
+<h3>只发成果：完整 dist，一个文件也不要漏</h3>
+<p>若接收者使用 PyCharm 或已有 Python，也可把根目录 <code>start_platform.py</code> 放在 <code>dist</code> 同级，运行它打开 <code>http://127.0.0.1:8000/</code>。它仅提供已构建文件，不执行下载或编译。修改数据或源码后，维护者需要先重新构建；启动服务不会自动更新 dist。</p>
+<p>交付整个 dist 文件夹，保留其中 assets、data、docs、Cesium 资源等全部内容。不能只复制 dist/index.html，也不能交开发入口代替 dist。接收方将完整文件夹交给其静态服务器，访问 HTTP(S) 地址。</p>
+<p>接收机已有 Python 时，可在<strong>dist 文件夹</strong>打开终端：</p>
+<pre><code>py -m http.server 8000 --bind 127.0.0.1</code></pre>
+<p>打开 <code>http://127.0.0.1:8000/</code>。这个地址只用于当前电脑；发给别人不会让对方访问到你的电脑。让 Cesium 令牌允许真实使用的地址。</p>
+<h3>正式网站更新</h3>
+<ol><li>在维护者电脑完成下载、处理和校验，确认 public/data 下是要发布的数据。</li><li>配置 .env.local 中的地图令牌、标题及允许地址。</li><li>运行 npm run build，先用 npm run preview 验收。</li><li>把完整 dist 部署到 HTTP(S) 静态网站，更新缓存，使 HTML、程序和数据来自同一版本。</li></ol>
+<p><strong>更新 Python 结果不会改动已部署的网站。</strong>要重新发布 JSON 到 public/data，重新构建并替换部署内容。不建议让接收者直接修改 dist 的压缩程序。</p>
+<h3>联网、离线和服务边界</h3>
+<p>Vue 与 Cesium JS/CSS、Workers、Assets 在构建中配套交付，不再依赖远程 Cesium CDN；海洋数据与遮罩也随包交付。默认底图仍访问网络地图服务，因此<strong>不是完全离线地图</strong>。真正离线需再准备许可允许的本地底图、替换地图来源并验收。</p>
+<p>此版本是静态 Vue 前端 + 本地 Python 工具，没有后端账户系统、服务器下载队列或自动定时更新。页面导入按钮读取用户选中的本地 JSON。若要加这些服务，需要另做后端及前端适配。</p>
+<p>公开静态文件可被访问者取得；数据权限不能靠隐藏按钮实现。指定人员访问需由服务器提供访问控制。公开展示时保留 <a href="https://cds.climate.copernicus.eu/datasets/reanalysis-era5-single-levels?tab=overview">ERA5</a>、<a href="https://cds.climate.copernicus.eu/datasets/reanalysis-oras5?tab=overview">ORAS5</a> 数据来源与许可要求；陆地资料为 <a href="https://www.naturalearthdata.com/about/terms-of-use/">Natural Earth 公共领域数据</a>。</p>
+</section>
+
+<section id="acceptance">
+<h2>11. 交付前验收</h2>
+<ul class="check">
+<li>交付方式明确：只看用完整 dist；开发用源码和锁文件；自行下载才配置 CDS。</li>
+<li>接收端安装兼容 Node，依赖安装和 npm run build 成功，源码包保留 pnpm-workspace.yaml；Python 使用其自己的 .venv。</li>
+<li>.env.local 配置的是此次部署的 Cesium 客户端令牌，地址限制匹配实际网址；CDS 凭据没有进入 Vue 环境变量或静态目录。</li>
+<li>通过 HTTP(S) 打开，海洋 JSON 与陆地遮罩正常读取，Cesium 资源完整，底图可显示。</li>
+<li>波浪是 1,464 个小时帧，温盐流各 2 个月平均帧，或与接收方新处理的元数据相符。</li>
+<li>往返拖动、松手定位、正放、倒放、暂停、循环可用；右侧详情和底部时间控件不互相遮挡。</li>
+<li>自动 / 高清 / 流畅画质可切换；用实际长时段数据在接收电脑检查初始加载与切帧。</li>
+<li>数据更新后开发页已刷新；正式版重新构建部署，预览显示正确的新时段。</li>
+<li>交付包不含个人 CDS 配置、原 .venv、node_modules 或个人 IDE 路径；说明与数据文件一并交付。</li>
+</ul>
+<div class="table-wrap"><table><thead><tr><th>现象</th><th>检查方法</th></tr></thead><tbody>
+<tr><td>双击 index.html 空白</td><td>开发用 npm run dev；成果以 HTTP 服务打开完整 dist。</td></tr>
+<tr><td>Vue 启动失败</td><td>检查 Node 是否满足 package.json engines，依赖是否在项目根目录安装，端口占用时会报错停止，关闭占用服务或显式指定其他 --port。</td></tr>
+<tr><td>海洋数据无法加载</td><td>检查 public/data/scs_field.json，构建后检查 dist/data；不要只交 HTML。</td></tr>
+<tr><td>地球空白 / 底图 401、403</td><td>检查 .env.local、地图权限、Allowed URLs 与网络；改环境后重启 dev / 重新构建。</td></tr>
+<tr><td>数据更新后仍旧</td><td>检查是否使用 --json-only；是否发布到默认位置；正式版是否重新构建并部署；刷新缓存。</td></tr>
+<tr><td>CDS 401、403 / 许可问题</td><td>检查接收方账户、条款及 CDSAPI_RC / CDSAPI_URL / CDSAPI_KEY，不在日志中输出令牌。</td></tr>
+<tr><td>温盐流不能逐小时变化</td><td>现有 ORAS5 是月平均；需换真正更细时间分辨率的数据源并适配。</td></tr>
+</tbody></table></div>
+</section>
+
+<footer>核对日期：2026-10-23。本文针对 Vue 工程版；已有数据网格和时次为当前成果快照。正式交付仍需在接收电脑或服务器按清单验收。本文不包含个人令牌。日常操作见《使用说明.html》。</footer>
+</div>
+</main>
+</body>
+</html>

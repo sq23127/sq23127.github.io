@@ -1,0 +1,26 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>逐小时播放与轻量数据说明 · 2.2</title><style>body{max-width:940px;margin:32px auto;padding:0 22px;background:#edf4f8;color:#18394d;font:15px/1.9 'Microsoft YaHei',sans-serif}h1{font-size:28px}h2{font-size:21px;margin-top:28px}code{background:#dceaf2;padding:3px 6px;overflow-wrap:anywhere}pre{white-space:pre-wrap;background:#12374b;color:#e6f6ff;padding:16px;border-radius:8px}table{width:100%;border-collapse:collapse}th,td{text-align:left;border-bottom:1px solid #c9dae5;padding:10px}.note{padding:15px;background:#fff;border-left:4px solid #1097ab}a{color:#087e94}</style>
+<h1>逐小时播放与轻量数据说明</h1><p>当前版本 2.2；更新日期：2026-10-26。</p>
+<div class="note">波浪恢复为每小时一帧，没有删掉任何小时。当前温度、盐度、海流的来源仍是 ORAS5 月平均，不伪造逐小时变化。数据网格默认 0.5°，保留处理结果的四位小数。</div>
+<h2>现在直接怎么用</h2><ul><li>PyCharm 中：停止旧运行进程，重新运行 <code>启动可视化平台.py</code>，浏览器加载的是构建后的 Vue 界面。</li><li>只看图和播放：将 <code>single-html-release/海洋可视化平台_双击即用.html</code> 发给对方，用新版 Chrome / Edge 打开。底图与 Cesium 辅助资源需联网，不用安装 Python 或 Node。</li><li>要下载与处理：使用新版本 Windows 完整运行包，完整解压后双击 <code>OceanPlatform.exe</code>，保持程序窗口运行。对方在数据工作台配置自己的 CDS 令牌，并自行在 CDS 接受对应数据集许可。</li><li>已有处理数据：左侧导入优先选择 <code>.ocean</code>；JSON 兼容保留。原始 NetCDF 在数据工作台导入处理，不能直接当作页面数据。</li></ul>
+<h2>数据为什么变小、解析为什么变快</h2><p>旧方法把每一小时的每个网格点都写成 JSON 数字和数组，再解析、复制整个数据对象。新版使用带帧索引的压缩二进制，后台线程解压后传递 ArrayBuffer；只有使用某帧时才展开它的网格，展开后的网格缓存最多 24 张，色标范围直接使用索引中的统计值。</p><p>这里是<strong>按需展开网格</strong>，不是通过网络逐小时下载。首次仍需读取并解压整份轻量文件，编码数据常驻内存。超长时段仍建议分月处理、缩小海域，不能认为任意多年数据都没有内存开销。</p>
+<table><tr><th>项目</th><th>此前逐小时版</th><th>当前逐小时轻量版</th></tr><tr><td>波浪帧数</td><td>1464</td><td>1464，完整保留</td></tr><tr><td>全部数据时间记录</td><td>1466，含两个月平均记录</td><td>1466</td></tr><tr><td>数据文件</td><td>约 113.8 MB JSON</td><td>约 23.6 MB .ocean，减少约 79%</td></tr><tr><td>单文件 HTML</td><td>约 47.1 MB</td><td>约 37.3 MB</td></tr><tr><td>数值处理精度</td><td>四位小数</td><td>四位小数；缺测仍为缺测</td></tr><tr><td>默认网格</td><td>原逐时示例 0.5°；后来月平均输出为 0.2°</td><td>0.5°，避免把波浪网格无意义加密</td></tr></table>
+<p>开发机离线编码测试（不包含地图绘制、显卡、网络耗时）：旧 JSON 读取解析约 792 ms，新文件读取解压与索引约 199 ms；旧数据约 306 MiB JavaScript 堆，新版约 2 MiB 堆加 74 MiB ArrayBuffer。测试结果随电脑、缓存和时段变化，不等于网页首屏的固定耗时。</p>
+<h2>以后解析新数据怎么做</h2><p>直接在 PyCharm 运行 <code>build_json.py</code>，现在默认逐小时、0.5°、流式生成轻量文件。需要指定时段时，在终端运行：</p><pre>python build_json.py --start 2026-06-01 --end 2026-07-31
+
+# 等价的显式写法
+python build_json.py --frequency hour --step 0.5 --compact-only
+
+# 确实需要完整 JSON 兼容导出时才运行（文件会大得多）
+python build_json.py --frequency hour --step 0.5 --json-compat</pre>
+<p>主输出为 <code>02_Geojson/scs_field.ocean</code>，发布副本为 <code>public/data/scs_field.ocean</code>。页面优先读取轻量文件；旧 JSON 不会自动删除，但它不再是当前页面的主数据。此前两帧月平均结果另存于 <code>backups/before-hourly-20261026/scs_field_monthly.json</code>。</p>
+<p>不要用 <code>--frequency month</code> 压缩体积，这会丢掉小时变化。<code>--step 0.2</code> 仍可显式选择，但点数约为 0.5° 的六倍，文件、处理和绘制成本都会增加，并不会提高 ERA5 波浪原始空间精度。</p>
+<h2>修改代码后怎么打包</h2><pre># 在开发电脑、项目目录中执行
+node scripts/prepare-assets.mjs
+pnpm run build
+node scripts/build_single_html.mjs
+node scripts/check_single_html.mjs
+
+# Windows 完整程序，需项目打包依赖
+python scripts/build_portable.py --skip-ui-build --zip</pre>
+<p>普通 Vue 构建在存在 .ocean 时不再携带旧的巨型数据 JSON；单文件 HTML 直接内嵌压缩后的轻量数据，不再重新解析整份 JSON。Windows 包仍需包含 Python 科学计算运行库，程序包总大小不能与单独数据文件大小混为一谈。</p>
+<h2>主要维护位置</h2><table><tr><th>文件</th><th>作用</th></tr><tr><td>build_json.py</td><td>NetCDF、时间精度、裁剪、网格与流式输出</td></tr><tr><td>compact_data.py</td><td>四位定点数、帧索引、压缩文件写入</td></tr><tr><td>src/data/compactDataset.js</td><td>边界校验、按需网格展开、缓存与导入</td></tr><tr><td>src/workers/dataLoader.js</td><td>后台加载、解压、索引读取，兼容旧 JSON</td></tr><tr><td>src/engine/createOceanEngine.js</td><td>绘制、时间轴、平滑切帧；统计时避免展开整个时段</td></tr><tr><td>scripts/build_single_html.mjs</td><td>单文件打包，直接内嵌 .ocean</td></tr></table></html>

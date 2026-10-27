@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Vue 平台开发维护与独立网页交付说明</title>
+<style>
+:root{font-family:"Microsoft YaHei",sans-serif;color:#173749;background:#edf3f6;line-height:1.85}*{box-sizing:border-box}body{margin:0}main{max-width:1100px;margin:26px auto;background:white;border-radius:12px;overflow:hidden}header{padding:30px 36px;background:#123e53;color:white}h1{font-size:28px;line-height:1.4;margin:4px 0 12px}header p{color:#d3e9f1}.body{padding:0 36px 32px}nav{display:flex;flex-wrap:wrap;gap:8px;padding:20px 0}a{color:#087f92}nav a{padding:3px 9px;background:#edf7fa;border-radius:5px;font-size:13px;text-decoration:none}h2{font-size:22px;margin-top:30px;border-top:1px solid #dce6ec;padding-top:20px}h3{font-size:17px;margin:22px 0 8px}p{margin:9px 0}code,pre{font-family:Consolas,"Microsoft YaHei",monospace}code{background:#edf3f6;padding:2px 4px;overflow-wrap:anywhere;font-size:.93em}pre{background:#102f44;color:#eefaff;border-radius:7px;padding:14px 17px;overflow:auto;line-height:1.7}pre code{background:none;padding:0;white-space:pre;overflow-wrap:normal;font-size:13px}.table{overflow:auto}table{border-collapse:collapse;width:100%;font-size:13px;margin:14px 0}th,td{padding:10px;border-bottom:1px solid #dae5ec;text-align:left;vertical-align:top}th{background:#edf4f7}.note{background:#eef9fb;border-left:4px solid #118da2;padding:12px 16px;margin:15px 0}.small{font-size:13px;color:#587283}li{margin:7px 0}button{cursor:pointer;border:0;border-radius:5px;padding:7px 12px}footer{font-size:12px;color:#587283;margin-top:30px;border-top:1px solid #dce6ec;padding-top:15px}@media(max-width:700px){main{margin:0;border-radius:0}header{padding:24px 18px}.body{padding:0 18px 24px}h1{font-size:23px}}@media print{main{margin:0;max-width:none}header{background:white;color:#123e53;padding:0}header p{color:#345}nav,button{display:none}.body{padding:0}h2,h3{break-after:avoid}tr{break-inside:avoid}pre{background:#f1f5f7;color:#123;white-space:pre-wrap}pre code{white-space:pre-wrap;overflow-wrap:anywhere}.table{overflow:visible}}
+</style></head><body><main>
+<header><h1>Vue 平台开发维护与独立网页交付说明</h1><p>面向开发者：平时改什么、到哪里改、如何验证，以及怎样把最新版交给其他人独立使用。</p><p>适用版本：当前本机 Vue 3.5.44 + Vite 8.3.5 + Cesium 1.118.0 工程，核对日期 2026-10-23。“最新版”指本项目当前 Vue 版，不表示将所有依赖升级到最新发布版。</p><button onclick="window.print()">打印 / 保存为 PDF</button></header>
+<div class="body"><div class="note"><strong>新增完整版：</strong>接收者需在自己电脑下载、导入处理并可视化时，使用 Windows 完整运行包 OceanPlatform.exe，见 <a href="完整版平台使用说明.html">完整版平台使用说明</a>。下文关于 dist、start_platform.py 的静态交付属于仅查看模式；开发入口 platform_server.py 提供本机完整服务。</div><nav><a href="#version">版本与入口</a><a href="#daily">日常工作流程</a><a href="#files">改动位置速查</a><a href="#ui">界面修改示例</a><a href="#animation">动画与画质</a><a href="#data">更新数据</a><a href="#field">增加数据要素</a><a href="#release">独立网页交付</a><a href="#deploy">发布网址</a><a href="#source">交源码给开发者</a><a href="#check">验收与故障</a></nav>
+
+<section id="version"><h2>1. 先确认你正在修改哪个版本</h2>
+<p>当前 Vue 工程在 <code>D:\Python项目组\Ocean_project</code>。工作说明中的路径均相对此工程根目录。打开 PyCharm 后先核对项目路径，避免误改旧版克隆目录。</p>
+<div class="note">GitHub 的 <code>codex/legacy-no-vue</code> 是刚上传的旧版存档，<strong>不是本说明对应的 Vue 源码</strong>。当前 Vue 工程在本机。把旧版分支拉下来，不会得到 src/App.vue 等 Vue 文件。</div>
+<div class="table"><table><tr><th>入口</th><th>用途</th><th>会读取哪里</th></tr><tr><td>pnpm run dev → 5173</td><td>日常改代码、调样式；支持热更新</td><td>src、public；开发入口为根 index.html</td></tr><tr><td>pnpm run preview → 4173</td><td>检查已经构建的成果</td><td>dist；不替你重新构建</td></tr><tr><td>start_platform.py → 8000</td><td>在 PyCharm 运行，打开已有成果</td><td>dist；不下载、不转换、不编译</td></tr></table></div>
+<p><strong>最容易误会的一点：</strong>你修改了 src 或 public，但浏览器开着 8000，画面仍旧，这是因为 8000 读取上一次 dist。需要先构建，或改用 5173 调试。根 index.html 仅是 Vue 入口，不能再作为旧版单文件页面双击交付。</p></section>
+
+<section id="daily"><h2>2. 你每天维护工程的固定流程</h2>
+<h3>第一次准备开发环境</h3><p>推荐 64 位 Node.js 22.12 或更新的兼容 LTS。工程要求 <code>^20.19.0 || &gt;=22.12.0</code>，但 pnpm 11 自身需要 Node 22 或以上。在工程根目录终端执行：</p>
+<pre><code>npm install -g pnpm@11.25.0
+pnpm install --frozen-lockfile
+pnpm run dev</code></pre>
+<p>浏览器打开 <code>http://127.0.0.1:5173/</code>。已有依赖时，日常直接运行 <code>pnpm run dev</code>。开发与预览端口启用严格检查，被占用时会停止，不会自动换端口。</p>
+<p>首次运行需参考 <code>.env.example</code> 新建 <code>.env.local</code>，填地图客户端令牌。当前本机已保留原来的地图配置；迁移到其他机器时要单独准备。</p>
+<h3>每次修改</h3><ol><li>先备份或提交本次修改前的源码。</li><li>运行开发服务，在 5173 修改并查看；大数据变化后手动刷新。</li><li>按下方速查表修改对应源文件，避免直接改 dist。</li><li>涉及播放、导入、生命周期或数据逻辑时运行测试；仅改文字或轻微样式时，浏览器核对即可。</li><li>运行构建与预览，确认打包后也正确，再交付完整 dist。</li></ol>
+<pre><code>pnpm test
+pnpm run build
+pnpm run preview</code></pre>
+<p>以上命令要在工程根目录执行。若只使用 npm，可用 <code>npm install</code>、<code>npm run dev</code>、<code>npm test</code>、<code>npm run build</code>；npm 不读取 pnpm-lock.yaml，因此团队严格复现优先统一 pnpm 和锁文件。</p></section>
+
+<section id="files"><h2>3. 平时需要改什么，到哪个文件改？</h2><div class="table"><table>
+<tr><th>你想修改的内容</th><th>文件 / 搜索关键词</th><th>修改时注意</th></tr>
+<tr><td>平台名称、地图令牌</td><td>.env.local：VITE_APP_TITLE、VITE_CESIUM_ION_TOKEN</td><td>改后重启开发服务；交付前重新构建。</td></tr>
+<tr><td>打开页面默认看哪里、默认数据文件</td><td>src/config.js：initialBounds、dataUrl、landUrl</td><td>镜头不改变数据范围；换数据要另行下载处理。</td></tr>
+<tr><td>左侧导入按钮、显示要素按钮</td><td>src/components/ImportPanel.vue：imports、modes</td><td>数组第一个值是内部标识，不要随意改；通常只改中文显示文字。</td></tr>
+<tr><td>时间栏文字、速度下拉选项</td><td>src/components/TimeControls.vue：tbSpeed、tbDirection、tbScrubHint</td><td>选项 value 参与逻辑；速度文字和 value 一起改。</td></tr>
+<tr><td>右侧信息行、点位数据显示顺序</td><td>src/components/DataDetails.vue：pointFields、infoFields</td><td>key 对应状态字段；只换顺序时移动数组项即可。</td></tr>
+<tr><td>面板位置、字号、颜色、响应式布局</td><td>src/styles/platform.css：#panel、#dataAside、#timebar、#title、@media</td><td>窄屏规则可能覆盖前面规则；一起检查。</td></tr>
+<tr><td>页面整体布局、组件之间传事件</td><td>src/App.vue：ImportPanel、TimeControls、DataDetails、call</td><td>数据导入和按钮动作经 call 传给引擎。</td></tr>
+<tr><td>首次加载、重试、挂载和销毁</td><td>src/composables/useOceanPlatform.js：initialize、onBeforeUnmount</td><td>负责 Viewer 生命周期、后台加载取消和全局监听清理。</td></tr>
+<tr><td>默认界面值</td><td>src/state/platformState.js：createPlatformState</td><td>这里放小型显示状态，不要塞入整份海洋数组。</td></tr>
+<tr><td>播放算法、贴图、粒子、颜色</td><td>src/engine/createOceanEngine.js：frameDelay、showSurface、startParticles、STOPS</td><td>具体示例见第 5 节；大数据和 Cesium 对象保留为普通对象。</td></tr>
+<tr><td>后台读取大 JSON</td><td>src/data/loadDataset.js；src/workers/dataLoader.js</td><td>保留 Worker 终止与 AbortSignal 取消处理。</td></tr>
+<tr><td>下载、转换、校验、发布 JSON</td><td>download_data.py、build_json.py、check_json.py、pack_json.py</td><td>Python 与前端通过 JSON 格式衔接。</td></tr>
+<tr><td>依赖、构建命令、子路径</td><td>package.json、pnpm-lock.yaml、pnpm-workspace.yaml、vite.config.js</td><td>保留兼容版本锁定，不能只改 package.json 就认为升级完成。</td></tr>
+</table></div></section>
+
+<section id="ui"><h2>4. 常见界面修改：可以照着做</h2>
+<h3>A. 改平台名称和地图账户</h3><p>修改根目录 <code>.env.local</code>：</p><pre><code>VITE_APP_TITLE=某某单位海洋环境可视化平台
+VITE_CESIUM_ION_TOKEN=该应用使用的Cesium客户端令牌</code></pre>
+<p>停止并重新运行开发服务；正式版重新构建。VITE_ 变量会进入浏览器程序，<strong>这里只放地图客户端令牌，不放 CDS 私密下载令牌</strong>。换维护单位时，在 Cesium 账户为该应用配置专用、最小权限令牌及允许的真实访问地址；查看者无需每个人注册 Cesium。</p>
+<h3>B. 改按钮文字</h3><p>在 ImportPanel.vue 的 modes 中，把 <code>['swh', '波高']</code> 改为 <code>['swh', '有效波高']</code>。保留 swh；它用于查找数据和分发动作。imports 中的 field/current/temp/sal/wave 同理。</p>
+<h3>C. 移动信息框</h3><p>platform.css 搜索 <code>#dataAside</code>，把 <code>right:16px</code> 改为 <code>right:24px</code> 可把整组右栏向左移。它里面依次是点位数据、数据信息、图例；需要互换顺序时改 DataDetails.vue 的 section 顺序。不要分别给三个子框设置互相冲突的绝对定位。</p>
+<p>搜索 <code>#infoBox #dataSource</code> 可改数据来源字号；<code>#infoBox .r</code> 的网格列宽负责标签与数值对齐。改完同时检查来源长文字、窄屏和播放栏是否遮挡。</p>
+<h3>D. 改初始镜头</h3><p>src/config.js 中改为：</p><pre><code>initialBounds: { west: 118, south: 24, east: 128, north: 34 },</code></pre><p>这只改变初始镜头。要显示东海对应的新数据，下载和转换范围也需一起改，见第 6 节。继续保留 <code>import.meta.env.BASE_URL</code> 拼接数据地址，便于网站部署在子目录。</p></section>
+
+<section id="animation"><h2>5. 播放、颜色、画质和粒子怎么改？</h2>
+<h3>A. 改默认播放速度</h3><p>引擎搜索 <code>function frameDelay()</code>，当前为 <code>1100/(Number(speedSelect.value)||1)</code>。例如把 1100 改为 1500，1× 的目标间隔变为 1.5 秒。实际切帧还受贴图生成、设备和网络影响，不能保证所有电脑都达到这个速度。</p>
+<p>需要默认选 2×：platformState.js 中把 <code>state.tbSpeed.value = state.tbDirection.value = '1'</code> 拆开：</p><pre><code>state.tbSpeed.value = '2'
+state.tbDirection.value = '1'</code></pre><p>想加 8×，在 TimeControls.vue 的 tbSpeed 选项中增加 <code>&lt;option value="8"&gt;8×&lt;/option&gt;</code>。同步改 TimeControls.vue 与引擎中描述“1× 约 1.1 秒”的提示；改速度不会提高源数据时间分辨率。</p>
+<h3>B. 改切帧过渡</h3><p>引擎搜索 <code>showSurface</code>、<code>fadeSurfaceLayers</code>、<code>transitionMs</code>、<code>flushScrub</code>。自动播放的渐变按帧间隔计算并限制到 120–600 ms；拖动预览为 120 ms，释放定位为 180 ms。调长更柔和，但会更慢；要改上限也需检查 showSurface 内的 600 ms 限制。</p>
+<div class="note">保留“新图解码与预热后再淡入”“旧图保留”“取消过期请求”“最后一次拖动优先”这几段逻辑。不能为了简化代码每次先清空全部图层，否则会重新出现闪屏。</div>
+<h3>C. 改色带</h3><p>引擎搜索 <code>const STOPS</code>。数值是 0–1 RGB，当前蓝→青→绿→黄→红。可改成下面的五段配色：</p><pre><code>const STOPS = [[0.08,0.12,0.45],[0,0.55,0.8],[0.2,0.8,0.7],[1,0.85,0.25],[0.8,0.1,0.1]];</code></pre><p>同时修改 platform.css 的 <code>#legend .bar</code> 渐变，使图例与贴图一致。目前 colorAt 中有末段索引 4，常规改色保持五个控制点；若增减段数，要一并修改索引。色标范围由 updateRangeScale 按所选区间固定，不要恢复成逐帧自动变化后又拿颜色直接比较。</p>
+<h3>D. 调清晰度与性能</h3><p>引擎 <code>surfaceTextureSize</code>：流畅 1536，自动 2048–2560，高清 3072；<code>applyDisplayQuality</code> 控制像素比上限和地球细节。纹理边长翻倍时，像素量约变成四倍。先用原始长时段数据实测，再增加尺寸。</p>
+<p>改默认不透明度时，核对引擎中 <code>surfaceOpacity</code> 的初始化及回退值，并同步 platformState.js 中 <code>surfaceOpacity.value</code>、<code>opacityValue.text</code>。当前默认 0.92 / 92 / 92%。只改状态会出现界面数值与首次绘图不一致。</p>
+<h3>E. 调粒子数量和速度</h3><p>引擎搜索 <code>P_N=900,TRAIL=6</code>，实际线段数量为 P_N × (TRAIL−1)，当前 4,500 条。低配设备可先试 P_N=500，保留 TRAIL≥3。<code>DT=8*3600</code> 是轨迹演示推进尺度，<code>buildWaveUV(0.6)</code> 是波浪粒子显示速度；这些不是实测传播速度，不能据此解释真实到达时间。</p>
+<p>修改以上逻辑后运行 engine / lifecycle 测试，再实际检查海流、波浪两类粒子及切换、销毁行为。不要用 Vue 深度响应式或 deep watch 包装 Viewer、全部网格、粒子和贴图缓存。</p></section>
+
+<section id="data"><h2>6. 更新时段、区域与数据：正确的完整流程</h2>
+<p>目录关系是：</p><pre><code>download_data.py → 01_data/原始NetCDF
+build_json.py → 02_Geojson/scs_field.json
+             → 校验并发布 public/data/scs_field.json
+Vue 开发版读取 public/data
+pnpm run build → dist/data + dist/assets + dist/cesium 等</code></pre>
+<p>下面 Python 命令都在根目录运行，使用本项目虚拟环境。新电脑先安装 Python、建立 .venv，再安装 numpy、pandas、xarray、scipy、h5netcdf、h5py、cdsapi、requests。下载前运行 <code>download_data.py --setup</code> 配置自己的 CDS，并在数据集页面接受条款。详细账户步骤见《数据与交付说明》。</p>
+<h3>A. 只更新现有 JSON</h3><p>将符合平台格式的新数据放到 02_Geojson/scs_field.json 后：</p><pre><code>.\.venv\Scripts\python.exe check_json.py 02_Geojson/scs_field.json
+.\.venv\Scripts\python.exe pack_json.py</code></pre><p>pack 默认校验并发布至 public/data/scs_field.json，<strong>不修改 Vue index.html</strong>。刷新开发页面可读取；8000 或线上正式版必须重新构建并更新部署。</p>
+<h3>B. 下载两天波浪，做隔离试验</h3><pre><code>.\.venv\Scripts\python.exe download_data.py --start 2026-06-01 --end 2026-06-02 --fields wave --output-dir 01_data/trial_wave --plan
+.\.venv\Scripts\python.exe download_data.py --start 2026-06-01 --end 2026-06-02 --fields wave --output-dir 01_data/trial_wave
+.\.venv\Scripts\python.exe build_json.py --input-dir 01_data/trial_wave --output 02_Geojson/trial_wave.json --publish-to public/data/trial_wave.json --start 2026-06-01 --end 2026-06-02 --frequency hour --step 0.5 --fields swh mwd mwp</code></pre>
+<p>第一条只在本地打印请求，不联网、不验证服务当前可用性。第二条实际下载。第三条生成独立试验 JSON，不覆盖当前默认数据。要查看试验，可用页面“导入 多合一”选择 trial_wave.json；刷新后仍回到默认数据。想把试验设为默认，改 config.js 的 dataUrl 为 <code>`${import.meta.env.BASE_URL}data/trial_wave.json`</code>。</p>
+<h3>C. 重新处理原有完整资料</h3><pre><code>.\.venv\Scripts\python.exe build_json.py --input-dir 01_data --start 2026-06-01 --end 2026-07-31 --frequency hour --step 0.5</code></pre><p>此命令会更新默认处理结果和默认发布数据。递归输入目录不能混放同字段、同时次的冲突版本；不要仅把旧文件移进输入目录的子文件夹。<code>--json-only</code> 可只生成处理结果；<code>--html</code> 已停用，Vue 版使用 <code>--publish-to</code>。</p>
+<h3>D. 换海域时要联动三处</h3><div class="table"><table><tr><th>位置</th><th>东海示例</th><th>顺序</th></tr><tr><td>下载</td><td>--area 34 118 24 128</td><td>北、西、南、东；仅 ERA5 区域下载有效</td></tr><tr><td>转换</td><td>--bounds 118 128 24 34</td><td>西、东、南、北；ORAS5 全球资料在此裁剪</td></tr><tr><td>config.js</td><td>initialBounds: {west:118,south:24,east:128,north:34}</td><td>只控制镜头</td></tr></table></div>
+<p>海岸遮罩约覆盖 98–146°E、6°S–50°N，扩大到此范围外需更新 public/data/land-polygons.json。遮罩是经纬度多边形环数组，不是随便放一个标准 GeoJSON 就能读取。</p>
+<div class="note">当前波浪是 1,464 个小时帧，温盐流各只有两个月平均帧；全部按 UTC。0.5° 是角度网格，纬向约 56 km。改 hour、改更密 step、提高清晰度或平滑动画，都不会产生原始数据不存在的真实细节。</div></section>
+
+<section id="field"><h2>7. 要增加“波周期”等新显示要素时</h2><p>波周期 mwp 已在数据中，但当前没有独立显示按钮。增加它不能只添加一个按钮，需要把整条链路接通：</p><ol><li>确认 JSON 的字段、单位、每帧时间与网格；先运行 check_json.py。mwp 单位为秒。</li><li>引擎的 MODE_FIELDS 增加一个模式，例如 <code>mwp:["mwp"]</code>；SURFACE_MODES 增加 <code>mwp:["mwp","平均波周期","s"]</code>。</li><li>检查 loadDataset 中候选 modes 数组，按需要加入 mwp；clearAll 中补 <code>removeSurface("mwp")</code>，防止旧图层留存。</li><li>platformState.js 的 state.modes 增加 mwp；ImportPanel.vue 的 modes 增加 <code>['mwp','波周期']</code>。</li><li>需要鼠标点位显示时，在状态 ids 中增加例如 htMwp，在 DataDetails.vue 的 pointFields 增加对应行，并在引擎鼠标事件里通过 sampLL 采样后写入该状态。</li><li>搜索引擎所有硬编码模式列表，逐一确认新模式；补新增模式、清除、切帧与导入的测试。</li></ol><p>这是修改路线，当前交付代码没有自动增加波周期按钮。若是完全新的变量，还需扩展 build_json.py 的 ALIASES / 单位等、check_json.py 的字段定义、前端 FIELDS / IMPORT_FIELDS 与相应元数据识别；下载源也可能需要新接口适配。</p></section>
+
+<section id="release"><h2>8. 给其他人独立使用网页：具体交什么？</h2>
+<div class="note"><strong>当前 Vue 版可以作为独立静态网站运行，不需要你的开发服务器或 Python 数据处理后台。</strong>但交付单位是完整 dist 文件夹，不是单独一个 HTML。浏览器需要 HTTP(S)，底图仍需网络。</div>
+<h3>A. 你先准备最终成果</h3><ol><li>确认 public/data 是最终数据，.env.local 是本次部署使用的地图客户端配置。</li><li>运行 pnpm run build。prebuild 会准备 Cesium 本地资源和说明，再生成 dist。</li><li>运行 pnpm run preview，在 4173 检查实际构建。修改源码后需要再次 build；preview 不会自动构建。</li><li>给成果文件夹加版本日期，记录数据时段、数据类型和地图账户由谁维护。</li></ol>
+<h3>B. 对方电脑有 Python：最省步骤的交付</h3><pre><code>海洋平台交付包/
+  start_platform.py
+  dist/
+    index.html
+    assets/         构建后的 Vue、Cesium 程序与样式
+    data/           海洋 JSON 与海岸遮罩
+    cesium/         Workers、Assets 等配套资源
+    docs/           使用和交付说明
+    licenses/       配套许可文件
+    ...             保留构建生成的其他内容</code></pre><p>保持 start_platform.py 和 dist 同级。对方运行 <code>python start_platform.py</code>，即可打开 <code>http://127.0.0.1:8000/</code>。无需 Node、前端编译工具、你的 CDS 账户或原始 NetCDF。已有服务占用 8000 时关闭旧服务，或运行 <code>python start_platform.py --port 8001</code>；地图令牌需允许实际端口。</p>
+<h3>C. 对方没有 Python</h3><p>只把完整 dist 交给其静态网站维护者，通过现有 HTTP(S) 服务提供访问。访问者只需要支持 WebGL 的浏览器。当前没有额外提供一键桌面 exe，也没有把静态服务器打进 dist。</p>
+<h3>D. 你说的“独立网页”若严格指单个 .html</h3><p>当前 Vue 构建不支持把全部程序、115 MB 数据、Cesium Workers 和运行资产变成一个可双击的完全离线 HTML。不能只复制 dist/index.html。常规独立交付用完整文件夹或一个网址；若必须单 HTML，需要另外设计导出版本，解决 Worker、资源寻址、数据内嵌和浏览器本地限制，不能拿旧版打包命令直接处理 Vue 入口。</p>
+<h3>E. 交付前哪些配置要改？</h3><p>若继续由你维护地图账户，可以为该应用提供专用、限制范围的客户端令牌；接收者仅查看时无需改代码。若维护责任转给对方，由对方提供其地图令牌，你在构建前更换 .env.local 并重新 build。生产文件里的令牌已经编译进程序，只改外部 .env.local 不会改变已构建的网页。</p>
+<p>不要把个人 CDS 配置、.venv、node_modules、.idea 或原始下载目录混进成果包。只看成果的人不需要这些内容。完整 dist 内的相对目录结构保持不变。</p></section>
+
+<section id="deploy"><h2>9. 给别人一个网址：开发者的发布流程</h2><ol><li>在维护电脑完成下载、处理、测试和构建。</li><li>让网站维护者把完整 dist 的<strong>内容</strong>放到站点的静态目录，例如网址根目录或 /ocean/ 子目录。</li><li>在地图账户配置实际网站访问地址，核对 HTTPS、域名、路径及端口；用另一台电脑打开发布网址。</li><li>验证 JS、CSS、Worker、海岸 JSON、海洋 JSON 都返回文件而非登录页或 404 页面，MIME 类型正确。</li><li>以后更新数据重新构建，成套替换发布版本。保留上个完整版本以便回退，避免更新过程中混用不同版本的 HTML、程序和数据。</li></ol>
+<p>vite.config.js 当前 <code>base:'./'</code>，适合保持目录结构的相对部署。子目录建议使用以斜线结尾的站点地址，例如 /ocean/；若服务器有固定前缀策略，也可显式配置 base 后重新构建。当前没有 Vue Router，不要求为每个不存在的资源都返回 index.html；资源不存在时返回真正 404 更利于排错。</p>
+<p>服务器可为文本和 JSON 开启 gzip 或 Brotli，并避免长期缓存 index.html 和未带内容哈希的 data/*.json；assets 中带哈希的程序可长期缓存。数据较大，首访加载需实测；网页播放已有数据，不会自动在线下载 ECMWF 更新。</p>
+<p><code>127.0.0.1</code> 是访问者自己的电脑。把本机地址发给别人不会让其连接你的电脑。当前启动脚本只监听本机；公网发布应使用单位已有网站或静态托管服务，而不是直接将调试服务暴露到公网。</p>
+<p>当前成果是静态展示；用户登录、私有数据、服务器下载队列、自动定时更新、数据分块接口均需要额外开发。完整离线还需要替换远程底图并验证许可及离线资源，不是仅断开网络测试数据色面即可。</p></section>
+
+<section id="source"><h2>10. 把 Vue 源码交给另一位开发者</h2><p>提供 src、public/data、scripts、tests、根 index.html、package.json、pnpm-lock.yaml、pnpm-workspace.yaml、vite.config.js、.env.example、五个 Python 文件及说明。需要复现数据处理时另附原始 NetCDF 或获取步骤。不要直接复制你的虚拟环境；对方重建自己的 Node/Python 环境与账户配置。</p>
+<p>pnpm-workspace.yaml 中有 Cesium 旧版本所需的 zip.js 2.7.34 兼容锁定与依赖构建策略，package.json 中也有 npm overrides；不要遗漏这些配置。升级 Vue / Vite / Cesium 时单独做修改，更新锁文件并测试；不要为换电脑顺手升级全部依赖。</p>
+<p>GitHub 同时保存 Vue 与旧版时，应使用不同分支或清晰的不同目录。当前旧版分支已存在，Vue 版尚不能靠它恢复。需要托管 Vue 最新版时，应另提交完整 Vue 工程，排除个人 .env.local、CDS 配置和 node_modules；大数据文件继续按仓库约定处理。</p></section>
+
+<section id="check"><h2>11. 每次发布前的开发者验收表</h2><ul><li>温度、盐度、海流、波高、波浪粒子均可显示；数据来源、单位、时段与实际元数据一致。</li><li>小时与月平均切换正确；缺小时没有伪造补帧。拖动往返、松手定位、正倒放、循环、暂停、切速都可用。</li><li>切换要素和快速拖动不闪空，失败时保留上一成功画面，图层和对象 URL 不持续增长。</li><li>新文件导入不会被尚未结束的首次后台加载覆盖，分类导入不混配不同日期或不同网格。</li><li>画质和不透明度生效；长来源文字不换出错位；点位框在数据信息上方，窄屏避让播放栏。</li><li>测试与生产构建通过；至少打开一次 preview 或 start_platform，验证构建后而非只验证 dev。</li><li>底图、配套 Worker 及 JSON 能加载；地图令牌允许实际访问地址。Bing 等外部底图短时失败可刷新重试，查看浏览器错误记录。</li><li>接收者只拿交付文件夹也能启动；成果包没有 CDS 凭据，附有数据时段和版本记录。</li></ul>
+<div class="table"><table><tr><th>现象</th><th>优先检查</th></tr><tr><td>修改代码却没变化</td><td>是否正在看 8000/4173 的旧 dist；重新 build，或用 5173 开发。</td></tr><tr><td>改 JSON 后数据仍旧</td><td>检查 public/data、config.dataUrl、实际打开的副本；生产重新构建后完整部署，并刷新缓存。</td></tr><tr><td>改地图令牌无效</td><td>开发服务是否重启、生产是否重建；.env.local 是否在项目根；Allowed URLs 是否匹配。</td></tr><tr><td>只有色面，没有卫星图</td><td>外部地图请求和账户权限；阅读底图错误记录；当前数据和底图是两条加载链。</td></tr><tr><td>给别人后白屏 / Worker 404</td><td>是否只发了 index.html、是否双击本地文件、是否漏了 cesium/assets/data 等目录、是否资源路径部署错误。</td></tr><tr><td>启动端口占用</td><td>关闭原服务或指定新端口；确认新的地图允许访问地址。</td></tr><tr><td>画面卡顿或首屏慢</td><td>先用自动/流畅；降低粒子或贴图规格，保持源网格合理；区分大 JSON 首次解析、绘图和外部底图等待。</td></tr><tr><td>把温盐流变成小时帧</td><td>当前 ORAS5 是月平均，必须更换真实小时资料源并适配；界面速度或 frequency 不能补出小时观测。</td></tr></table></div></section>
+<footer>按当前源码核对的开发与交付手册；文中修改示例是操作指导，不表示已自动改动平台参数或部署新网站。数据详情与账户配置可结合《数据与交付说明.html》阅读。当前 Vue 程序和旧版 GitHub 存档应分别维护。</footer>
+</div></main></body></html>
